@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Display Search Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .table thead th {
+            background-color: #00a8e8;
+            color: white;
+            text-align: center;
+        }
+        .table tbody tr:nth-child(odd) {
+            background-color: #f2f9ff;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #e6f7ff;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Search Results</h2>
+
+    <form th:action="@{/list}" method="get">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="monthYear">Select Month and Year</label>
+                    <select class="form-control" id="monthYear" name="monthYear" required>
+                        <option value="2024-1">January 2024</option>
+                        <option value="2024-2">February 2024</option>
+                        <option value="2024-3">March 2024</option>
+                        <option value="2024-4">April 2024</option>
+                        <option value="2024-5">May 2024</option>
+                        <option value="2024-6">June 2024</option>
+                        <option value="2024-7">July 2024</option>
+                        <option value="2024-8">August 2024</option>
+                        <option value="2024-9">September 2024</option>
+                        <option value="2024-10">October 2024</option>
+                        <option value="2024-11">November 2024</option>
+                        <option value="2024-12">December 2024</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex align-items-center mt-3">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <h4>Results for <span th:text="${selectedMonthYear}">October 2024</span></h4>
+
+    <table class="table mt-3 table-bordered">
+        <thead>
+        <tr>
+            <th>Search Keywords</th>
+            <th>Platform</th>
+            <th>Matching Pattern</th>
+            <th>Remarks</th>
+            <th th:each="day : ${#numbers.sequence(1, daysInMonth)}">Day <span th:text="${day}"></span></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="dayResults : ${resultsByDay}">
+            <td th:text="${dayResults.size() > 0 ? dayResults[0].searchKeywords : '-'}"></td>
+            <td th:text="${dayResults.size() > 0 ? dayResults[0].platform : '-'}"></td>
+            <td th:text="${dayResults.size() > 0 ? dayResults[0].matchingPattern : '-'}"></td>
+            <td th:text="${dayResults.size() > 0 ? dayResults[0].remarks : '-'}"></td>
+
+            <td th:each="day : ${#numbers.sequence(1, daysInMonth)}">
+                <span th:if="${dayResults.size() > 0 && dayResults[day - 1] != null}" class="badge badge-success">&#10004;</span>
+                <span th:if="${dayResults.size() == 0 || dayResults[day - 1] == null}" class="badge badge-light"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

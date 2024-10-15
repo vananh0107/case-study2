@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add New Search Criteria</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h2>Add New Search Criteria</h2>
+
+    <form th:action="@{/search/add}" th:object="${search}" method="post">
+        <div class="form-group">
+            <label for="searchKeywords">Search Keywords</label>
+            <input type="text" class="form-control" id="searchKeywords" placeholder="Search Keywords" th:field="*{searchKeywords}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('searchKeywords')}" th:errors="*{searchKeywords}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="matchKeywords">Match Keywords</label>
+            <input type="text" class="form-control" id="matchKeywords" placeholder="Match Keywords" th:field="*{matchKeywords}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('matchKeywords')}" th:errors="*{matchKeywords}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="performanceRewardDays">Performance reward / number of days</label>
+            <input type="number" class="form-control" id="performanceRewardDays" th:field="*{performanceRewardDays}" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('performanceRewardDays')}" th:errors="*{performanceRewardDays}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="platform">Platform</label>
+            <select class="form-control" id="platform" th:field="*{platform}">
+                <option value="Google">Google</option>
+                <option value="Yahoo">Yahoo</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('platform')}" th:errors="*{platform}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="matchingPattern">Matching pattern</label>
+            <select class="form-control" id="matchingPattern" th:field="*{matchingPattern}">
+                <option value="Partial match">Partial match</option>
+                <option value="Unanimous">Unanimous</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('matchingPattern')}" th:errors="*{matchingPattern}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Device</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="device" id="pc" value="PC" th:field="*{device}">
+                <label class="form-check-label" for="pc">PC</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="device" id="smartphone" value="Smartphone" th:field="*{device}">
+                <label class="form-check-label" for="smartphone">Smartphone</label>
+            </div>
+            <div class="text-danger" th:if="${#fields.hasErrors('device')}" th:errors="*{device}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="remarks">Remarks</label>
+            <textarea class="form-control" id="remarks" th:field="*{remarks}"></textarea>
+            <div class="text-danger" th:if="${#fields.hasErrors('remarks')}" th:errors="*{remarks}">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="#" class="btn btn-secondary" th:href="@{/templates/search/list-1.html}">Cancel</a>
+    </form>
+</div>
+</body>
+</html>
