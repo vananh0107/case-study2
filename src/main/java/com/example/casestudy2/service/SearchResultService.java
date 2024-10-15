@@ -19,4 +19,9 @@ public class SearchResultService {
                 .stream().map(searchResult -> modelMapper.map(searchResult,SearchResultDTO.class))
                 .toList();
     }
+    public List<SearchResultDTO> getResultsByYearAndMonth(int year, int month) {
+        return searchResultRepository.findByYearAndMonth(year, month)
+                .stream().map(searchResult -> modelMapper.map(searchResult,SearchResultDTO.class))
+                .toList();
+    }
 }

@@ -24,10 +24,12 @@ public class SearchResultController {
         int year = Integer.parseInt(parts[0]);
         int month = Integer.parseInt(parts[1]);
 
-        List<SearchResultDTO> allResults = searchResultService.findAll();
+        List<SearchResultDTO> allResults = searchResultService.getResultsByYearAndMonth(year, month);
+
         List<List<SearchResultDTO>> resultsByDay = new ArrayList<>();
 
         int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+
         for (int day = 1; day <= daysInMonth; day++) {
             LocalDate currentDate = LocalDate.of(year, month, day);
 
@@ -38,20 +40,37 @@ public class SearchResultController {
             resultsByDay.add(resultsForDay);
         }
 
-        List<List<SearchResultDTO>> paginatedResults = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            if (i < resultsByDay.size()) {
-                paginatedResults.add(resultsByDay.get(i));
-            } else {
-                paginatedResults.add(new ArrayList<>());
-            }
-        }
-
-        model.addAttribute("resultsByDay", paginatedResults);
+        model.addAttribute("resultsByDay", resultsByDay);
         model.addAttribute("selectedMonthYear", monthYear);
         model.addAttribute("daysInMonth", daysInMonth);
 
-        return "search/list";
+        return "search/list-1";
     }
+    @GetMapping("/list-2")
+    public String showSearchResultsDetail(@RequestParam(value = "monthYear", defaultValue = "2024-10") String monthYear, Model model) {
+        String[] parts = monthYear.split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
 
+        List<SearchResultDTO> allResults = searchResultService.findAll();
+
+        List<List<SearchResultDTO>> resultsByDay = new ArrayList<>();
+        int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+
+        for (int day = 1; day <= daysInMonth; day++) {
+            LocalDate currentDate = LocalDate.of(year, month, day);
+
+            List<SearchResultDTO> resultsForDay = allResults.stream()
+                    .filter(result -> result.getSearchDate().isEqual(currentDate))
+                    .collect(Collectors.toList());
+
+            resultsByDay.add(resultsForDay);
+        }
+
+        model.addAttribute("resultsByDay", resultsByDay);
+        model.addAttribute("selectedMonthYear", monthYear);
+        model.addAttribute("daysInMonth", daysInMonth);
+
+        return "search/list-2";
+    }
 }
