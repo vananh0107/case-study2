@@ -52,6 +52,7 @@
         <thead>
         <tr>
             <th>Search Keywords</th>
+            <th>Display Keywords</th>
             <th>Platform</th>
             <th>Matching Pattern</th>
             <th th:each="day : ${#numbers.sequence(1, daysInMonth)}">Day <span th:text="${day}"></span></th>
@@ -67,6 +68,8 @@
                     <li th:each="item : ${result.results}" th:text="${item}"></li>
                 </ul>
             </td>
+        </tr>
+            <th th:each="day : ${#numbers.sequence(1, daysInMonth)}"> <span th:text="${day}"></span></th>
         </tr>
         </tbody>
     </table>

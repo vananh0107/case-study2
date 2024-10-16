@@ -12,20 +12,6 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-
-        modelMapper.addMappings(new PropertyMap<SearchResult, SearchResultDTO>() {
-            @Override
-            protected void configure() {
-                map().setSearchKeywords(source.getSearch().getSearchKeywords());
-                map().setPlatform(source.getSearch().getPlatform());
-                map().setMatchingPattern(source.getSearch().getMatchingPattern());
-                map().setRemarks(source.getSearch().getRemarks());
-                map().setSearchDate(source.getSearchDate());
-                map().setImgUrl(source.getImgUrl());
-                map().setResults(source.getResults());
-            }
-        });
-
         return modelMapper;
     }
 }

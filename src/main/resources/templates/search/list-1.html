@@ -4,16 +4,30 @@
     <title>Display Search Results</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        .table {
+            table-layout: fixed;
+            width: 100%;
+        }
         .table thead th {
             background-color: #00a8e8;
             color: white;
-            text-align: center;
+            white-space: nowrap;
+            padding: 10px;
         }
         .table tbody tr:nth-child(odd) {
             background-color: #f2f9ff;
         }
         .table tbody tr:nth-child(even) {
             background-color: #e6f7ff;
+        }
+        .day-column {
+            width: 400px;
+            text-align: center;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+        .keyword-column {
+            width: 200px;
         }
     </style>
 </head>
@@ -51,24 +65,25 @@
     <table class="table mt-3 table-bordered">
         <thead>
         <tr>
-            <th>Search Keywords</th>
-            <th>Platform</th>
-            <th>Matching Pattern</th>
-            <th>Remarks</th>
-            <th th:each="day : ${#numbers.sequence(1, daysInMonth)}">Day <span th:text="${day}"></span></th>
+            <th class="keyword-column">Search Keywords</th>
+            <th class="keyword-column">Matching Keywords</th>
+            <th class="keyword-column">Platform</th>
+            <th class="keyword-column">Match Pattern</th>
+            <th class="day-column" th:each="day : ${#numbers.sequence(1, daysInMonth)}">Day <span th:text="${day}"></span></th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="dayResults : ${resultsByDay}">
-            <td th:text="${dayResults.size() > 0 ? dayResults[0].searchKeywords : '-'}"></td>
-            <td th:text="${dayResults.size() > 0 ? dayResults[0].platform : '-'}"></td>
-            <td th:text="${dayResults.size() > 0 ? dayResults[0].matchingPattern : '-'}"></td>
-            <td th:text="${dayResults.size() > 0 ? dayResults[0].remarks : '-'}"></td>
-
-            <td th:each="result : ${dayResults}">
-                <span th:if="${result.matchingPattern == 'Partial match'}" class="badge badge-danger">&#10006;</span>
-                <span th:if="${result.matchingPattern == 'Unanimous'}" class="badge badge-secondary">-</span>
-                <span th:if="${result.matchingPattern == null}"></span>
+            <td class="keyword-column" th:text="${dayResults.searchKeywords}"></td>
+            <td class="keyword-column" th:text="${dayResults.matchKeywords}"></td>
+            <td class="keyword-column" th:text="${dayResults.platform}"></td>
+            <td class="keyword-column" th:text="${dayResults.matchingPattern}"></td>
+            <td class="day-column" th:each="result : ${dayResults.results}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
+                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                    <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                <p th:each="detail : ${result.results}" th:text="${detail}"></p>
             </td>
         </tr>
         </tbody>
