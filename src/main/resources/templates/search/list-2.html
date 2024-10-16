@@ -19,8 +19,6 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h2>Search Results</h2>
-
     <form th:action="@{/list}" method="get">
         <div class="row">
             <div class="col-md-8">
@@ -54,24 +52,28 @@
         <thead>
         <tr>
             <th>Search Keywords</th>
+            <th>Display Keywords</th>
             <th>Platform</th>
             <th>Matching Pattern</th>
-            <th>Remarks</th>
-            <th th:each="day : ${#numbers.sequence(1, daysInMonth)}">Day <span th:text="${day}"></span></th>
+            <th th:each="day : ${#numbers.sequence(1, daysInMonth)}"> <span th:text="${day}"></span></th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="dayResults : ${resultsByDay}">
-            <td th:text="${dayResults.size() > 0 ? dayResults[0].searchKeywords : '-'}"></td>
-            <td th:text="${dayResults.size() > 0 ? dayResults[0].platform : '-'}"></td>
-            <td th:text="${dayResults.size() > 0 ? dayResults[0].matchingPattern : '-'}"></td>
-            <td th:text="${dayResults.size() > 0 ? dayResults[0].remarks : '-'}"></td>
-
-            <td th:each="day : ${#numbers.sequence(1, daysInMonth)}">
-                <span th:if="${dayResults.size() > 0 && dayResults[day - 1] != null}" class="badge badge-success">&#10004;</span>
-                <span th:if="${dayResults.size() == 0 || dayResults[day - 1] == null}" class="badge badge-light"></span>
-            </td>
-        </tr>
+            <tr th:each="dayResults : ${resultsByDay}">
+                <div th:if="${dayResults.size() > 0}" th:each="detail : ${dayResults}">
+                    <td th:text="${detail.searchKeywords}">
+                    </td>
+                    <td th:text="${detail.matchKeywords}">
+                    </td>
+                    <td th:text="${detail.platform}">
+                    </td>
+                    <td th:text="${detail.matchingPattern}">
+                    </td>
+                    <td >
+                        <p th:each="result : ${detail.results}" th:text="${result}"></p>
+                    </td>
+                </div>
+            </tr>
         </tbody>
     </table>
 </div>

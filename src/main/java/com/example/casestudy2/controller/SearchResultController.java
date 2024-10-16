@@ -1,17 +1,19 @@
 package com.example.casestudy2.controller;
 
 import com.example.casestudy2.dto.SearchResultDTO;
+import com.example.casestudy2.dto.SearchResultDetailDTO;
 import com.example.casestudy2.service.SearchResultService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Controller
 public class SearchResultController {
@@ -23,35 +25,25 @@ public class SearchResultController {
         String[] parts = monthYear.split("-");
         int year = Integer.parseInt(parts[0]);
         int month = Integer.parseInt(parts[1]);
-
-        List<SearchResultDTO> allResults = searchResultService.findAll();
-        List<List<SearchResultDTO>> resultsByDay = new ArrayList<>();
-
         int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
-        for (int day = 1; day <= daysInMonth; day++) {
-            LocalDate currentDate = LocalDate.of(year, month, day);
 
-            List<SearchResultDTO> resultsForDay = allResults.stream()
-                    .filter(result -> result.getSearchDate().isEqual(currentDate))
-                    .collect(Collectors.toList());
+        List<SearchResultDTO> allResults = searchResultService.getResultsByYearAndMonth(10, 2024);
+//        Map<Integer, List<SearchResultDTO>> resultsMap = new HashMap<>();
+//
+//        for (SearchResultDTO result : allResults) {
+//            int runNumber = result.getRunNumber();
+//            resultsMap.putIfAbsent(runNumber, new ArrayList<>());
+//            resultsMap.get(runNumber).add(result);
+//        }
+//
+//        List<List<SearchResultDTO>> results = new ArrayList<>(resultsMap.values());
+//
+//        model.addAttribute("resultsByDay", results);
+//        model.addAttribute("selectedMonthYear", monthYear);
+//        model.addAttribute("daysInMonth", daysInMonth);
 
-            resultsByDay.add(resultsForDay);
-        }
+        return "search/list-2";
 
-        List<List<SearchResultDTO>> paginatedResults = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            if (i < resultsByDay.size()) {
-                paginatedResults.add(resultsByDay.get(i));
-            } else {
-                paginatedResults.add(new ArrayList<>());
-            }
-        }
-
-        model.addAttribute("resultsByDay", paginatedResults);
-        model.addAttribute("selectedMonthYear", monthYear);
-        model.addAttribute("daysInMonth", daysInMonth);
-
-        return "search/list";
     }
 
 }
