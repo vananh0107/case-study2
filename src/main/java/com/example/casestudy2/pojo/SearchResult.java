@@ -3,7 +3,6 @@ package com.example.casestudy2.pojo;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.List;
 @Entity
 @Data

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Display Search Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 40px;
+        }
+        .table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .table thead th {
+            background-color: #00a8e8;
+            color: white;
+            white-space: nowrap;
+            padding: 10px;
+        }
+        .table tbody tr:nth-child(odd) {
+            background-color: #f2f9ff;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #e6f7ff;
+        }
+        .day-column {
+            width: 400px;
+            text-align: center;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+        .keyword-column {
+            width: 200px;
+        }
+        .tick-column {
+            width: 50px;
+        }
+        .modal img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/search/list}" method="get">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="monthYear">Select Month and Year</label>
+                <select class="form-control" id="monthYear" name="monthYear" required>
+                    <option th:value="'2024-1'" th:selected="${selectedMonthYear == '2024-1'}">January 2024</option>
+                    <option th:value="'2024-2'" th:selected="${selectedMonthYear == '2024-2'}">February 2024</option>
+                    <option th:value="'2024-3'" th:selected="${selectedMonthYear == '2024-3'}">March 2024</option>
+                    <option th:value="'2024-4'" th:selected="${selectedMonthYear == '2024-4'}">April 2024</option>
+                    <option th:value="'2024-5'" th:selected="${selectedMonthYear == '2024-5'}">May 2024</option>
+                    <option th:value="'2024-6'" th:selected="${selectedMonthYear == '2024-6'}">June 2024</option>
+                    <option th:value="'2024-7'" th:selected="${selectedMonthYear == '2024-7'}">July 2024</option>
+                    <option th:value="'2024-8'" th:selected="${selectedMonthYear == '2024-8'}">August 2024</option>
+                    <option th:value="'2024-9'" th:selected="${selectedMonthYear == '2024-9'}">September 2024</option>
+                    <option th:value="'2024-10'" th:selected="${selectedMonthYear == '2024-10'}">October 2024</option>
+                    <option th:value="'2024-11'" th:selected="${selectedMonthYear == '2024-11'}">November 2024</option>
+                    <option th:value="'2024-12'" th:selected="${selectedMonthYear == '2024-12'}">December 2024</option>
+                </select>
+            </div>
+        </div>
+        <div class="mx-4 d-flex align-items-center mt-3">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+        <div class="mx-4 d-flex align-items-center mt-3">
+            <button id="toggleButton" type="button" class="btn btn-primary" onclick="toggleTables()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+                </svg>
+                Display Switching
+            </button>
+        </div>
+        <div class="mx-4 d-flex align-items-center mt-3">
+            <a th:href="@{/search/add}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                </svg>
+                Add
+            </a>
+        </div>
+    </div>
+</form>
+
+
+
+<div id="searchResult">
+    <h4>Results for <span th:text="${selectedMonthYear}">October 2024</span></h4>
+
+    <div id="list1" class="result-table">
+        <table class="table mt-3 table-bordered">
+            <thead>
+            <tr>
+                <th class="keyword-column">Search Keywords</th>
+                <th class="keyword-column">Matching Keywords</th>
+                <th class="keyword-column">Platform</th>
+                <th class="keyword-column">Match Pattern</th>
+                <th class="day-column" th:each="day : ${#numbers.sequence(1, daysInMonth)}" th:text="${day}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="dayResults : ${resultsByDay}">
+                <td class="keyword-column" th:text="${dayResults.searchKeywords}"></td>
+                <td class="keyword-column">
+                    <p th:each="match : ${dayResults.matchKeywords}" th:text="${match}"></p>
+                </td>
+                <td class="keyword-column" th:text="${dayResults.platform}"></td>
+                <td class="keyword-column" th:text="${dayResults.matchingPattern}"></td>
+                <td class="day-column" th:each="result : ${dayResults.results}">
+                    <div th:if="${result != null}">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16" height="16"
+                            fill="currentColor"
+                            class="bi bi-card-image"
+                            cursor="pointer"
+                            viewBox="0 0 16 16"
+                            th:attr="onclick='openImagePopup(\'' + ${result.imgUrl} + '\')'">
+                            style="cursor:pointer;">
+                            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                            <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5h12z"/>
+                        </svg>
+                        <p th:each="detail, indexStat : ${result.results}">
+                            <span th:text="${detail}" th:classappend="${result.indexFound == indexStat.index ? 'text-danger' : ''}"></span>
+                        </p>
+                    </div>
+                    <div th:if="${result == null}" th:text="''"></div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img id="modalImage" alt="Image Preview" src="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="list2" class="result-table" style="display: none;">
+        <table class="table mt-3 table-bordered">
+            <thead>
+            <tr>
+                <th class="keyword-column">Search Keywords</th>
+                <th class="keyword-column">Matching Keywords</th>
+                <th class="keyword-column">Platform</th>
+                <th class="keyword-column">Match Pattern</th>
+                <th class="keyword-column">Remarks</th>
+                <th class="tick-column" th:each="day : ${#numbers.sequence(1, daysInMonth)}" th:text="${day}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="dayResults : ${resultsByDay}">
+                <td class="keyword-column" th:text="${dayResults.searchKeywords}"></td>
+                <td class="keyword-column">
+                    <p th:each="match : ${dayResults.matchKeywords}" th:text="${match}"></p>
+                </td>
+                <td class="keyword-column" th:text="${dayResults.platform}"></td>
+                <td class="keyword-column" th:text="${dayResults.matchingPattern}"></td>
+                <td class="keyword-column" th:text="${dayResults.remarks}"></td>
+                <td class="tick-column" th:each="result : ${dayResults.results}">
+                    <div th:if="${result != null}">
+                    <span th:if="${result.indexFound !=null}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                          <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                        </svg>
+                    </span>
+                        <span th:if="${result.indexFound ==null}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-slash-circle" viewBox="0 0 16 16">
+                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                          <path d="M11.3 4.7a1 1 0 1 1 1.4 1.4l-6 6a1 1 0 1 1-1.4-1.4l6-6"/>
+                        </svg>
+                    </span>
+                    </div>
+                    <div th:if="${result == null}" th:text="''"></div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function toggleTables() {
+        const list1 = document.getElementById('list1');
+        const list2 = document.getElementById('list2');
+        const button = document.getElementById('toggleButton');
+
+        if (list1.style.display === 'none') {
+            list1.style.display = 'block';
+            list2.style.display = 'none';
+            button.textContent = 'Show Search 2';
+        } else {
+            list1.style.display = 'none';
+            list2.style.display = 'block';
+            button.textContent = 'Show Search 1';
+        }
+    }
+    function openImagePopup(imageUrl) {
+        const keyword = "screenshot_";
+        var url;
+        const index = imageUrl.indexOf(keyword);
+        if (index !== -1) {
+            url="/screenshots/"+imageUrl.substring(index);
+        }
+        console.log(url)
+        document.getElementById('modalImage').src = url;
+        $('#imageModal').modal('show');
+    }
+</script>
+</body>
+</html>

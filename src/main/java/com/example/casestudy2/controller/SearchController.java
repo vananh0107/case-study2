@@ -27,7 +27,6 @@ public class SearchController {
         }
         searchService.save(searchDTO);
         redirectAttributes.addFlashAttribute("successMessage", "Search criteria saved successfully!");
-        return "search/add";
-//        return "redirect:/search/list";
+        return "search/list";
     }
 }

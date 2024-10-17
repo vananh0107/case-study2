@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "search_result_detail")
+@Data
 public class SearchResultDetail {
 
     @Id
@@ -17,10 +17,8 @@ public class SearchResultDetail {
     @Column(nullable = false)
     private String imgUrl;
 
-    @ElementCollection
-    @CollectionTable(name = "result_details", joinColumns = @JoinColumn(name = "search_result_detail_id"))
-    @Column(name = "result")
-    private List<String> results;
+    @Column(nullable = false)
+    private String result;
 
     @Column(nullable = false)
     private LocalDate searchDate;

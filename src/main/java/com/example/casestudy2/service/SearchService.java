@@ -27,4 +27,7 @@ public class SearchService {
     public void save(SearchDTO searchDTO){
         searchRepository.save(modelMapper.map(searchDTO, Search.class));
     }
+    public Search findById(Integer id){
+        return searchRepository.findById(id).get();
+    }
 }

@@ -9,7 +9,7 @@ public class SearchResultDTO {
     private String searchKeywords;
     private String platform;
     private String matchingPattern;
-    private String matchKeywords;
+    private List<String> matchKeywords;
     private String remarks;
     private List<SearchResultDetailDTO> results;
 }
