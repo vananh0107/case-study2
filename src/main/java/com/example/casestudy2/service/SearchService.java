@@ -18,16 +18,12 @@ public class SearchService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<SearchDTO> findAll(){
-        return searchRepository.findAll()
-                .stream().map(search -> modelMapper.map(search,SearchDTO.class))
-                .toList();
+    public List<Search> findAll(){
+        return searchRepository.findAll();
     }
 
-    public void save(SearchDTO searchDTO){
+    public void create(SearchDTO searchDTO){
         searchRepository.save(modelMapper.map(searchDTO, Search.class));
     }
-    public Search findById(Integer id){
-        return searchRepository.findById(id).get();
-    }
+
 }

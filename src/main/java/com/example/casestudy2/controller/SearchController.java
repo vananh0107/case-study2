@@ -25,7 +25,7 @@ public class SearchController {
         if (bindingResult.hasErrors()) {
             return "search/add";
         }
-        searchService.save(searchDTO);
+        searchService.create(searchDTO);
         redirectAttributes.addFlashAttribute("successMessage", "Search criteria saved successfully!");
         return "search/list";
     }

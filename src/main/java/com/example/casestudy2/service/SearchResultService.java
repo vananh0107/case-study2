@@ -2,12 +2,12 @@ package com.example.casestudy2.service;
 
 import com.example.casestudy2.dto.SearchResultDTO;
 import com.example.casestudy2.dto.SearchResultDetailDTO;
-import com.example.casestudy2.pojo.SearchResult;
+import com.example.casestudy2.repo.SearchCount;
 import com.example.casestudy2.repo.SearchResultRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Date;
+import com.example.casestudy2.pojo.SearchResult;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
@@ -16,83 +16,62 @@ import java.util.*;
 public class SearchResultService {
     @Autowired
     private SearchResultRepository searchResultRepository;
-    public void saveSearchResult(SearchResult searchResult){
+    @Autowired
+    private ModelMapper modelMapper;
+    public void create(SearchResult searchResult) {
         searchResultRepository.save(searchResult);
     }
-    public List<SearchResultDTO> getResultsByYearAndMonth(int month, int year) {
-        List<Object[]> rawResults = searchResultRepository.findSearchResultsByMonthAndYear(month, year);
-        Map<Integer, SearchResultDTO> resultGroups = new HashMap<>();
 
-        // Tính số ngày trong tháng
+
+    // Get results of each search by date
+    public List<SearchResultDTO> getResultsByYearAndMonth(int month, int year) {
+        List<SearchCount> rawResults = searchResultRepository.findSearchResultsByMonthAndYear(month, year);
+        Map<Integer, SearchResultDTO> resultGroups = new HashMap<>();
         YearMonth yearMonth = YearMonth.of(year, month);
         int daysInMonth = yearMonth.lengthOfMonth();
 
-        for (Object[] arr : rawResults) {
-            int runNumber = (Integer) arr[0];
-            String searchKeywords = (String) arr[1];
-            String platform = (String) arr[2];
-            String matchingPattern = (String) arr[3];
-            List<String> matchKeywords = Arrays.asList(((String) arr[4]).split(","));
-            String remarks = (String) arr[5];
-            LocalDate searchDate = ((Date) arr[6]).toLocalDate();
-            int dayOfMonth = searchDate.getDayOfMonth(); // Lấy số ngày trong tháng
-            String imgUrl = String.valueOf(arr[7]);
-            List<String> resultsList = Arrays.asList(((String) arr[8]).split(","));
+        for (SearchCount searchCount : rawResults) {
+            int runNumber = searchCount.getRunNumber();
+            LocalDate searchDate = searchCount.getSearchDate();
 
-            // Tìm hoặc tạo SearchResultDTO
-            SearchResultDTO searchResultDTO = resultGroups.computeIfAbsent(runNumber, k -> {
-                SearchResultDTO dto = new SearchResultDTO();
-                dto.setRunNumber(runNumber);
-                dto.setSearchKeywords(searchKeywords);
-                dto.setPlatform(platform);
-                dto.setMatchingPattern(matchingPattern);
-                dto.setMatchKeywords(matchKeywords);
-                dto.setRemarks(remarks);
-                // Khởi tạo List với số phần tử = số ngày trong tháng, tất cả phần tử đều rỗng ban đầu
-                dto.setResults(new ArrayList<>(Collections.nCopies(daysInMonth, null)));
-                return dto;
-            });
+            // find or create SearchResultDTO
+            SearchResultDTO searchResultDTO = resultGroups.computeIfAbsent(runNumber, k -> createSearchResultDTO(searchCount, daysInMonth));
 
-            // Tạo SearchResultDetailDTO cho ngày cụ thể
-            SearchResultDetailDTO detailDTO = new SearchResultDetailDTO();
-            detailDTO.setSearchDate(searchDate.toString());
-            detailDTO.setImgUrl(imgUrl);
-            detailDTO.setResults(resultsList);
-            Integer indexFound = null;
+            // Covert from  SearchCount to SearchResultDetailDTO
+            SearchResultDetailDTO detailDTO = modelMapper.map(searchCount, SearchResultDetailDTO.class);
+            detailDTO.setResults(Arrays.asList(searchCount.getResult().split(", ")));
+            //find Index of element has result same keyword
+            detailDTO.setIndexFound(findIndexFound(detailDTO.getResults(), searchCount.getMatchKeywords(), searchCount.getMatchingPattern()));
 
-            if (matchingPattern.equals("Unanimous")) {
-                for (int i = 0; i < resultsList.size(); i++) {
-                    boolean found = true;
-                    for (String keyword : matchKeywords) {
-                        if (!resultsList.get(i).equalsIgnoreCase(keyword)) {
-                            found = false;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        indexFound = i;
-                        break;
-                    }
-                }
-            } else if (matchingPattern.equals("Partial match")) {
-                for (int i = 0; i < resultsList.size(); i++) {
-                    for (String keyword : matchKeywords) {
-                        if (resultsList.get(i).toLowerCase().contains(keyword.toLowerCase())) {
-                            indexFound = i;
-                            break;
-                        }
-                    }
-                    if (indexFound != null) {
-                        break;
-                    }
-                }
-            }
-            detailDTO.setIndexFound(indexFound);
-            searchResultDTO.getResults().set(dayOfMonth - 1, detailDTO);
+            searchResultDTO.getResults().set(searchDate.getDayOfMonth() - 1, detailDTO);
         }
 
         return new ArrayList<>(resultGroups.values());
     }
+
+    private SearchResultDTO createSearchResultDTO(SearchCount searchCount, int daysInMonth) {
+        SearchResultDTO dto = modelMapper.map(searchCount, SearchResultDTO.class);
+        dto.setResults(new ArrayList<>(Collections.nCopies(daysInMonth, null)));
+        return dto;
+    }
+
+    private Integer findIndexFound(List<String> resultsList, String matchKeywords, String matchingPattern) {
+        List<String> matchKeywordsList = Arrays.asList(matchKeywords.split(","));
+        Integer indexFound = null;
+
+        for (int i = 0; i < resultsList.size(); i++) {
+            String result = resultsList.get(i);
+            boolean found = matchingPattern.equals("Unanimous") ?
+                    matchKeywordsList.stream().allMatch(keyword -> result.equalsIgnoreCase(keyword)) :
+                    matchKeywordsList.stream().anyMatch(keyword -> result.toLowerCase().contains(keyword.toLowerCase()));
+
+            if (found) {
+                indexFound = i;
+                break;
+            }
+        }
+
+        return indexFound;
+    }
+
 }
-
-

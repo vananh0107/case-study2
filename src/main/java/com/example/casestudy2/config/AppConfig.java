@@ -9,9 +9,16 @@ import org.modelmapper.ModelMapper;
 
 @Configuration
 public class AppConfig {
+
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(new PropertyMap<SearchResult, SearchResultDTO>() {
+            @Override
+            protected void configure() {
+                map().setSearchKeywords(source.getSearch().getMatchKeywords());
+            }
+        });
         return modelMapper;
     }
 }

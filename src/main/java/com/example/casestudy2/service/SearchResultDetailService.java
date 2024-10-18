@@ -13,17 +13,17 @@ public class SearchResultDetailService {
     @Autowired
     private SearchResultDetailRepository searchResultDetailRepository;
 
-    public void createSearchResultDetail(SearchResult searchResult, String imgUrl, String result) {
-        // Lấy ngày hiện tại
+    public void create(SearchResult searchResult, String imgUrl, String result) {
+        // Get current date
         LocalDate currentDate = LocalDate.now();
 
-        // Tìm runNumber lớn nhất cho ngày hiện tại
+        // Find the largest runNumber for the current day
         Integer maxRunNumber = searchResultDetailRepository.findMaxRunNumberBySearchDate(currentDate);
 
-        // Nếu chưa có runNumber cho ngày này, maxRunNumber sẽ là 0, do đó runNumber mới sẽ là 1
+        // If there is no runNumber for this day, maxRunNumber will be 0, so the new runNumber will be 1
         Integer newRunNumber = maxRunNumber + 1;
 
-        // Tạo mới SearchResultDetail
+        // Create new  SearchResultDetail
         SearchResultDetail searchResultDetail = new SearchResultDetail();
         searchResultDetail.setSearchResult(searchResult);
         searchResultDetail.setImgUrl(imgUrl);
@@ -31,7 +31,7 @@ public class SearchResultDetailService {
         searchResultDetail.setSearchDate(currentDate);
         searchResultDetail.setRunNumber(newRunNumber);
 
-        // Lưu vào database
+        // Save database
         searchResultDetailRepository.save(searchResultDetail);
     }
 }

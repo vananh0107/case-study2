@@ -17,7 +17,7 @@ public class SearchResultDetail {
     @Column(nullable = false)
     private String imgUrl;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String result;
 
     @Column(nullable = false)

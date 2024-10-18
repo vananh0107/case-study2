@@ -1,6 +1,7 @@
 package com.example.casestudy2.controller;
 
 import com.example.casestudy2.dto.SearchResultDTO;
+import com.example.casestudy2.repo.SearchResultRepository;
 import com.example.casestudy2.service.SearchResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,8 @@ import java.util.List;
 public class SearchResultController {
     @Autowired
     private SearchResultService searchResultService;
-
+    @Autowired
+    private SearchResultRepository searchResultRepository;
     @GetMapping("/list")
     public String showSearchResults(@RequestParam(value = "monthYear", required = false) String monthYear, Model model) {
         if (monthYear == null || monthYear.isEmpty()) {
@@ -30,7 +32,6 @@ public class SearchResultController {
         int month = Integer.parseInt(parts[1]);
         int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
         List<SearchResultDTO> results = searchResultService.getResultsByYearAndMonth(month, year);
-
         model.addAttribute("resultsByDay", results);
         model.addAttribute("selectedMonthYear", monthYear);
         model.addAttribute("daysInMonth", daysInMonth);

@@ -3,6 +3,8 @@ package com.example.casestudy2.pojo;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "searchs")
@@ -31,4 +33,6 @@ public class Search {
     private String device;
 
     private String remarks;
+    @OneToMany(mappedBy = "search", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SearchResult> searchResults;
 }
