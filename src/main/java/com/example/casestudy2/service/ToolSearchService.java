@@ -55,7 +55,7 @@ public class ToolSearchService {
         }
     }
 
-    private void processSingleSearch(WebDriver driver, Search search) throws IOException {
+    public void processSingleSearch(WebDriver driver, Search search) throws IOException {
         //init tool
         SearchPlatform platformConfig = SearchPlatform.createPlatform(search.getPlatform());
         driver.get(platformConfig.getSearchUrl());
@@ -78,7 +78,7 @@ public class ToolSearchService {
         searchResultDetailService.create(searchResult, imgUrl, concatenatedSuggestions);
     }
 
-    private String getSuggestions(WebDriver driver, By suggestionLocator) {
+    public String getSuggestions(WebDriver driver, By suggestionLocator) {
         List<WebElement> suggestions = driver.findElements(suggestionLocator);
         StringBuilder suggestionTextBuilder = new StringBuilder();
         for (WebElement suggestion : suggestions) {
@@ -92,11 +92,11 @@ public class ToolSearchService {
         return suggestionTextBuilder.toString();
     }
 
-    private File takeScreenshot(WebDriver driver) {
+    public File takeScreenshot(WebDriver driver) {
         return ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
     }
 
-    private String saveScreenshot(File screenshot) throws IOException {
+    public String saveScreenshot(File screenshot) throws IOException {
         Path currentPath = Paths.get(System.getProperty("user.dir"));
         Path screenshotDir = Paths.get(currentPath.toString(), "src", "main", "resources", "screenshots");
 

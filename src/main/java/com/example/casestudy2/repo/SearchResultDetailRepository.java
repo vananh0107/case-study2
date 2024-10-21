@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 public interface SearchResultDetailRepository extends JpaRepository<SearchResultDetail, Integer> {
     @Query("SELECT COALESCE(MAX(s.runNumber), 0) FROM SearchResultDetail s WHERE s.searchDate = :searchDate")

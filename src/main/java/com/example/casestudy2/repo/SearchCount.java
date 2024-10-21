@@ -2,10 +2,12 @@ package com.example.casestudy2.repo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class SearchCount {
     private Integer runNumber;
     private String searchKeywords;

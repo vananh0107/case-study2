@@ -42,7 +42,7 @@ public class SearchResultService {
             detailDTO.setResults(Arrays.asList(searchCount.getResult().split(", ")));
             //find Index of element has result same keyword
             detailDTO.setIndexFound(findIndexFound(detailDTO.getResults(), searchCount.getMatchKeywords(), searchCount.getMatchingPattern()));
-
+            searchResultDTO.setMatchKeywords(Arrays.asList(searchCount.getMatchKeywords().split(",")));
             searchResultDTO.getResults().set(searchDate.getDayOfMonth() - 1, detailDTO);
         }
 
